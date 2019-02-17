@@ -16,13 +16,16 @@ namespace DiceCalc
 
     public class DiceDist
     {
+        // The divisor to be divided into the dividends to get the probabilities
         private readonly int _divisor;
 
         private readonly int _indexPeriod;
 
+        // _distributionDividends' keys are possible results, the values the dividend of their probability
         private readonly Dictionary<int, int> _distributionDividends;
 
         private Dictionary<int, double> _Distribution;
+        // Distribution keys are possible results, the values their probability
         public Dictionary<int, double> Distribution
             =>
                 _Distribution ??
@@ -33,6 +36,7 @@ namespace DiceCalc
         public double ExpectedValue => _ExpectedValue ?? (_ExpectedValue = Distribution.Select(kvp => kvp.Key*kvp.Value).Sum()).Value;
 
         private double? _Variance;
+        // Calculated via the law that Var[X] = E[x^2] - E[x]^2
         public double Variance
             => _Variance ?? (_Variance = Distribution.Select(kvp => kvp.Key*kvp.Key*kvp.Value).Sum() - ExpectedValue*ExpectedValue).Value;
 
@@ -69,9 +73,15 @@ namespace DiceCalc
         }
 
 
-        public static DiceDist operator +(DiceDist a, int b)
+        public static DiceDist operator +(DiceDist d, int i)
         {
-            throw new NotImplementedException();
+            var dD = d._distributionDividends.ToDictionary(kvp => kvp.Key + i, kvp => kvp.Value);
+            return new DiceDist(dD, d._divisor, d._indexPeriod);
+        }
+
+        public static DiceDist operator +(int i, DiceDist d)
+        {
+            return d + i;
         }
 
 
@@ -81,13 +91,30 @@ namespace DiceCalc
         }
 
 
-        public static DiceDist operator *(DiceDist a, int b)
+        public static DiceDist operator *(DiceDist d, int m)
+        {
+            if (m == 0)
+            {
+                return new DiceDist(new Dictionary<int, int> { {0,1} },1,1);
+            }
+
+            var dD = d._distributionDividends.ToDictionary(kvp => kvp.Key * m, kvp => kvp.Value);
+            return new DiceDist(dD, d._divisor, d._indexPeriod * m);
+        }
+
+        public static DiceDist operator *(int m, DiceDist d)
+        {
+            return d*m;
+        }
+
+
+        public static DiceDist NumMultWithRounding(DiceDist d, double m, RoundingType rounding)
         {
             throw new NotImplementedException();
         }
 
 
-        public static DiceDist NumMultWithRounding(DiceDist a, double b, RoundingType rounding)
+        public static DiceDist NumDivWithRounding(DiceDist d, int q, RoundingType rounding)
         {
             throw new NotImplementedException();
         }

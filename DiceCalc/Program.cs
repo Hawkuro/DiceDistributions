@@ -10,7 +10,7 @@ namespace DiceCalc
     {
         static void Main(string[] args)
         {
-            DiceDist test = new DiceDist(6);
+            DiceDist test = 1 + 2 * new DiceDist(6);
             Console.WriteLine(test);
             Console.WriteLine($"Expected Value = {test.ExpectedValue}");
             Console.WriteLine($"Variance = {test.Variance}");
