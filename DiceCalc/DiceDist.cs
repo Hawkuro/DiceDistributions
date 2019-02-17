@@ -29,12 +29,14 @@ namespace DiceCalc
                 (_Distribution =
                     _distributionDividends.ToDictionary(kvp => kvp.Key, kvp => (double) kvp.Value/_divisor));
 
-        private double? _ExpectedValue = null;
+        private double? _ExpectedValue;
         public double ExpectedValue => _ExpectedValue ?? (_ExpectedValue = Distribution.Select(kvp => kvp.Key*kvp.Value).Sum()).Value;
 
-        private double? _Variance = null;
+        private double? _Variance;
         public double Variance
             => _Variance ?? (_Variance = Distribution.Select(kvp => kvp.Key*kvp.Key*kvp.Value).Sum() - ExpectedValue*ExpectedValue).Value;
+
+        public double StdDeviance => Math.Sqrt(Variance);
 
         public DiceDist(Dictionary<int, int> distributionDividends, int divisor, int indexPeriod)
         {

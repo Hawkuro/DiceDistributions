@@ -14,6 +14,7 @@ namespace DiceCalc
             Console.WriteLine(test);
             Console.WriteLine($"Expected Value = {test.ExpectedValue}");
             Console.WriteLine($"Variance = {test.Variance}");
+            Console.WriteLine($"Standard Deviation = {test.StdDeviance}");
 
             Console.ReadLine();
         }
