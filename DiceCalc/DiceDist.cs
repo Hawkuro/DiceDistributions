@@ -67,7 +67,25 @@ namespace DiceCalc
 
         public static DiceDist operator +(DiceDist a, DiceDist b)
         {
-            throw new NotImplementedException();
+            var dD = new Dictionary<int, int>();
+            foreach (var kvpa in a._distributionDividends)
+            {
+                foreach (var kvpb in b._distributionDividends)
+                {
+                    var newKey = kvpa.Key + kvpb.Key;
+                    if (dD.ContainsKey(newKey))
+                    {
+                        // a and b are assumed independent, note divisors also multiplied
+                        dD[newKey] += kvpa.Value * kvpb.Value;
+                    }
+                    else
+                    {
+                        dD.Add(newKey, kvpa.Value * kvpb.Value);
+                    }
+                }
+            }
+
+            return new DiceDist(dD, a._divisor * b._divisor);
         }
 
 
@@ -85,7 +103,25 @@ namespace DiceCalc
 
         public static DiceDist operator *(DiceDist a, DiceDist b)
         {
-            throw new NotImplementedException();
+            var dD = new Dictionary<int, int>();
+            foreach (var kvpa in a._distributionDividends)
+            {
+                foreach (var kvpb in b._distributionDividends)
+                {
+                    var newKey = kvpa.Key * kvpb.Key;
+                    if (dD.ContainsKey(newKey))
+                    {
+                        // a and b are assumed independent, note divisors also multiplied
+                        dD[newKey] += kvpa.Value * kvpb.Value;
+                    }
+                    else
+                    {
+                        dD.Add(newKey, kvpa.Value * kvpb.Value);
+                    }
+                }
+            }
+
+            return new DiceDist(dD, a._divisor * b._divisor);
         }
 
 
