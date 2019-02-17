@@ -45,11 +45,11 @@ namespace DiceCalc
             return b == 0 ? a : gcd(b, a%b);
         }
 
-        public DiceDist(Dictionary<int, int> distributionDividends, int divisor)
+        private DiceDist(Dictionary<int, int> distributionDividends, int divisor)
         {
             var GCD = distributionDividends.Values.Aggregate(divisor, gcd);
 
-            if (GCD > 1)
+            if (GCD != 1)
             {
                 divisor /= GCD;
                 distributionDividends = distributionDividends.ToDictionary(kvp => kvp.Key, kvp => kvp.Value/GCD);
@@ -94,6 +94,10 @@ namespace DiceCalc
             return new DiceDist(dD, a._divisor * b._divisor);
         }
 
+        public static DiceDist operator -(DiceDist d)
+        {
+            return new DiceDist(d._distributionDividends.ToDictionary(kvp=>-kvp.Key,kvp=>kvp.Value),d._divisor);
+        }
 
         public static DiceDist operator +(DiceDist d, int i)
         {
@@ -106,6 +110,15 @@ namespace DiceCalc
             return d + i;
         }
 
+        public static DiceDist operator -(DiceDist d, int i)
+        {
+            return d + (-i);
+        }
+
+        public static DiceDist operator -(int i, DiceDist d)
+        {
+            return i + (-d);
+        }
 
         public static DiceDist operator *(DiceDist a, DiceDist b)
         {
@@ -201,6 +214,29 @@ namespace DiceCalc
             }
 
             return new DiceDist(dD, d._divisor);
+        }
+
+        public static DiceDist DiceDiv(DiceDist a, DiceDist b, RoundingType rounding)
+        {
+            var dD = new Dictionary<int, int>();
+            foreach (var kvpa in a._distributionDividends)
+            {
+                foreach (var kvpb in b._distributionDividends)
+                {
+                    var newKey = Round((double)kvpa.Key / kvpb.Key, rounding);
+                    if (dD.ContainsKey(newKey))
+                    {
+                        // a and b are assumed independent, note divisors also multiplied
+                        dD[newKey] += kvpa.Value * kvpb.Value;
+                    }
+                    else
+                    {
+                        dD.Add(newKey, kvpa.Value * kvpb.Value);
+                    }
+                }
+            }
+
+            return new DiceDist(dD, a._divisor * b._divisor);
         }
     }
 }
