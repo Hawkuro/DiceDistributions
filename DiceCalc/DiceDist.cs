@@ -93,7 +93,7 @@ namespace DiceCalc
         {
             if (m == 0)
             {
-                return new DiceDist(new Dictionary<int, int> { {0,1} },1,1);
+                return new DiceDist(new Dictionary<int, int> { {0,1} },1);
             }
 
             var dD = d._distributionDividends.ToDictionary(kvp => kvp.Key * m, kvp => kvp.Value);
