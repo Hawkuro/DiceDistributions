@@ -107,6 +107,22 @@ namespace DiceCalc
             return d*m;
         }
 
+        private static int Round(double d, RoundingType rType)
+        {
+            switch (rType)
+            {
+                case RoundingType.ToEven:
+                    return (int) Math.Round(d, MidpointRounding.ToEven);
+                case RoundingType.AwayFromZero:
+                    return (int) Math.Round(d, MidpointRounding.AwayFromZero);
+                case RoundingType.Ceil:
+                    return (int) Math.Ceiling(d);
+                case RoundingType.Floor:
+                    return (int) Math.Floor(d);
+                default:
+                    throw new Exception("RoundingType not valid");
+            }
+        }
 
         public static DiceDist NumMultWithRounding(DiceDist d, double m, RoundingType rounding)
         {
