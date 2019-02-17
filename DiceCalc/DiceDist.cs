@@ -16,14 +16,25 @@ namespace DiceCalc
 
     public class DiceDist
     {
-        private int _divisor;
+        private readonly int _divisor;
 
-        private int _indexPeriod;
+        private readonly int _indexPeriod;
 
         private readonly Dictionary<int, int> _distributionDividends;
 
+        private Dictionary<int, double> _Distribution;
         public Dictionary<int, double> Distribution
-            => _distributionDividends.Keys.ToDictionary(k => k, k => ((double) _distributionDividends[k])/_divisor);
+            =>
+                _Distribution ??
+                (_Distribution =
+                    _distributionDividends.ToDictionary(kvp => kvp.Key, kvp => (double) kvp.Value/_divisor));
+
+        private double? _ExpectedValue = null;
+        public double ExpectedValue => _ExpectedValue ?? (_ExpectedValue = Distribution.Select(kvp => kvp.Key*kvp.Value).Sum()).Value;
+
+        private double? _Variance = null;
+        public double Variance
+            => _Variance ?? (_Variance = Distribution.Select(kvp => kvp.Key*kvp.Key*kvp.Value).Sum() - ExpectedValue*ExpectedValue).Value;
 
         public DiceDist(Dictionary<int, int> distributionDividends, int divisor, int indexPeriod)
         {
@@ -43,6 +54,11 @@ namespace DiceCalc
 
             _divisor = dSize;
             _indexPeriod = 1;
+        }
+
+        public override string ToString()
+        {
+            return string.Join("\n", Distribution.Select(kvp => $"{kvp.Key}: {kvp.Value*100:F}%"));
         }
 
         public static DiceDist operator +(DiceDist a, DiceDist b)

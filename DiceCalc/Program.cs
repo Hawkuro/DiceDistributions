@@ -11,7 +11,9 @@ namespace DiceCalc
         static void Main(string[] args)
         {
             DiceDist test = new DiceDist(6);
-            Console.WriteLine(string.Join("\n",test.Distribution.Select(kvp=>$"{kvp.Key}: {kvp.Value*100:F}%")));
+            Console.WriteLine(test);
+            Console.WriteLine($"Expected Value = {test.ExpectedValue}");
+            Console.WriteLine($"Variance = {test.Variance}");
 
             Console.ReadLine();
         }
