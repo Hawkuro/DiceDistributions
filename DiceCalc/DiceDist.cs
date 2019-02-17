@@ -19,8 +19,6 @@ namespace DiceCalc
         // The divisor to be divided into the dividends to get the probabilities
         private readonly int _divisor;
 
-        private readonly int _indexPeriod;
-
         // _distributionDividends' keys are possible results, the values the dividend of their probability
         private readonly Dictionary<int, int> _distributionDividends;
 
@@ -42,11 +40,12 @@ namespace DiceCalc
 
         public double StdDeviance => Math.Sqrt(Variance);
 
-        public DiceDist(Dictionary<int, int> distributionDividends, int divisor, int indexPeriod)
+        public DiceDist(Dictionary<int, int> distributionDividends, int divisor)
         {
+            // TODO: Enforce GCD
+
             _distributionDividends = distributionDividends;
             _divisor = divisor;
-            _indexPeriod = indexPeriod;
         }
 
         public DiceDist(int dSize)
@@ -59,7 +58,6 @@ namespace DiceCalc
             }
 
             _divisor = dSize;
-            _indexPeriod = 1;
         }
 
         public override string ToString()
@@ -76,7 +74,7 @@ namespace DiceCalc
         public static DiceDist operator +(DiceDist d, int i)
         {
             var dD = d._distributionDividends.ToDictionary(kvp => kvp.Key + i, kvp => kvp.Value);
-            return new DiceDist(dD, d._divisor, d._indexPeriod);
+            return new DiceDist(dD, d._divisor);
         }
 
         public static DiceDist operator +(int i, DiceDist d)
@@ -99,7 +97,7 @@ namespace DiceCalc
             }
 
             var dD = d._distributionDividends.ToDictionary(kvp => kvp.Key * m, kvp => kvp.Value);
-            return new DiceDist(dD, d._divisor, d._indexPeriod * m);
+            return new DiceDist(dD, d._divisor);
         }
 
         public static DiceDist operator *(int m, DiceDist d)
@@ -126,13 +124,41 @@ namespace DiceCalc
 
         public static DiceDist NumMultWithRounding(DiceDist d, double m, RoundingType rounding)
         {
-            throw new NotImplementedException();
+            var dD = new Dictionary<int,int>();
+            foreach (var kvp in d._distributionDividends)
+            {
+                var newKey = Round(kvp.Key*m, rounding);
+                if (dD.ContainsKey(newKey))
+                {
+                    dD[newKey] += kvp.Value;
+                }
+                else
+                {
+                    dD.Add(newKey,kvp.Value);
+                }
+            }
+
+            return new DiceDist(dD,d._divisor);
         }
 
 
         public static DiceDist NumDivWithRounding(DiceDist d, int q, RoundingType rounding)
         {
-            throw new NotImplementedException();
+            var dD = new Dictionary<int, int>();
+            foreach (var kvp in d._distributionDividends)
+            {
+                var newKey = Round((double) kvp.Key / q, rounding);
+                if (dD.ContainsKey(newKey))
+                {
+                    dD[newKey] += kvp.Value;
+                }
+                else
+                {
+                    dD.Add(newKey, kvp.Value);
+                }
+            }
+
+            return new DiceDist(dD, d._divisor);
         }
     }
 }
