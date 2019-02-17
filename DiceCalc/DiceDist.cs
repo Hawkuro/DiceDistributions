@@ -40,9 +40,20 @@ namespace DiceCalc
 
         public double StdDeviance => Math.Sqrt(Variance);
 
+        private static int gcd(int a, int b)
+        {
+            return b == 0 ? a : gcd(b, a%b);
+        }
+
         public DiceDist(Dictionary<int, int> distributionDividends, int divisor)
         {
-            // TODO: Enforce GCD
+            var GCD = distributionDividends.Values.Aggregate(divisor, gcd);
+
+            if (GCD > 1)
+            {
+                divisor /= GCD;
+                distributionDividends = distributionDividends.ToDictionary(kvp => kvp.Key, kvp => kvp.Value/GCD);
+            }
 
             _distributionDividends = distributionDividends;
             _divisor = divisor;
@@ -50,12 +61,7 @@ namespace DiceCalc
 
         public DiceDist(int dSize)
         {
-            _distributionDividends = new Dictionary<int, int>();
-
-            for (int i = 1; i <= dSize; i++)
-            {
-                _distributionDividends.Add(i,1);
-            }
+            _distributionDividends = Enumerable.Range(1,dSize).ToDictionary(k=>k,k=>1);
 
             _divisor = dSize;
         }
